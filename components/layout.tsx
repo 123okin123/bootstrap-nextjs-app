@@ -1,12 +1,12 @@
-import { ReactNode } from "react"
-import styles from './layout.module.scss'
+import React, { ReactNode, ReactElement } from 'react';
+import styles from './layout.module.scss';
 
 interface Props {
-    children: ReactNode
+  children: ReactNode;
 }
 
-function Layout({ children }: Props) {
-    return <div className={styles.container}>{children}</div>
-  }
-  
-  export default Layout
+function Layout({ children }: Props): ReactElement {
+  return <div className={styles.container}>{children}</div>;
+}
+
+export default Layout;
