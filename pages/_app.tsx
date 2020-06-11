@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react'
+import '../styles/global.scss'
 
 interface Props {
   Component: any

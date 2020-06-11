@@ -1,8 +1,20 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import React, { ReactElement } from 'react'
+import { getSortedPostsData } from '../lib/posts'
+import { GetStaticProps } from 'next'
 
-export default function Home(): ReactElement {
+interface Props {
+  allPostsData: {
+    title: string;
+    date: string;
+    id: string;
+}[]
+}
+
+
+
+export default function Home({allPostsData}: Props): ReactElement {
   return (
     <div className="container">
       <Head>
@@ -25,6 +37,19 @@ export default function Home(): ReactElement {
             <p>Find in-depth information about Next.js features and API.</p>
           </a>
         </div>
+
+
+      {allPostsData.map(({id, date, title}) => 
+                  <li  key={id}>
+                  {title}
+                  <br />
+                  {id}
+                  <br />
+                  {date}
+                </li>
+      ) }
+
+        <Link href="/posts/first-post">First Post</Link>
       </main>
 
       <footer>
@@ -183,4 +208,16 @@ export default function Home(): ReactElement {
       `}</style>
     </div>
   )
+}
+
+
+
+
+export const getStaticProps: GetStaticProps<Props> = async () =>  {
+  const allPostsData = getSortedPostsData()
+  return {
+    props: {
+      allPostsData
+    }
+  }
 }
