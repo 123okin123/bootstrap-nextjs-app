@@ -3,6 +3,7 @@ import '../styles/global.scss';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import theme from '../src/theme';
 import { ThemeProvider } from '@material-ui/core/styles';
+import { ApiContainer } from '../hooks/useApi';
 
 interface Props {
   Component: any;
@@ -19,11 +20,12 @@ export default function App({ Component, pageProps }: Props): ReactElement {
   }, []);
   return (
     <>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <ApiContainer.Provider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </ApiContainer.Provider>
     </>
   );
 }
