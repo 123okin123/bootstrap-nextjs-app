@@ -18,6 +18,8 @@ import {
 } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Link from '../components/link';
+import * as Yup from 'yup';
+import { Formik, FormikHelpers } from 'formik';
 
 interface Props {
   allPostsData: {
@@ -58,8 +60,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+interface FormValues {
+  email: string;
+  password: string;
+}
+
 export default function Home({ allPostsData }: Props): ReactElement {
   const classes = useStyles();
+
+  const onSubmit = async (
+    values: FormValues,
+    { setSubmitting }: FormikHelpers<FormValues>,
+  ): Promise<void> => {
+    try {
+      await authService.signUp(values);
+      setSubmitSuccess(true);
+    } catch {}
+    setSubmitting(false);
+  };
+
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
@@ -72,55 +91,74 @@ export default function Home({ allPostsData }: Props): ReactElement {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} noValidate>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}>
-              Sign In
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="/sign-up" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
-            <Box mt={5}></Box>
-          </form>
+          <Formik
+            initialValues={{ firstName: '', lastName: '', email: '', password: '' }}
+            validationSchema={Yup.object({
+              firstName: Yup.string().max(15, 'Must be 15 characters or less').required('Required'),
+              lastName: Yup.string().max(20, 'Must be 20 characters or less').required('Required'),
+              email: Yup.string().email('Invalid email address').required('Required'),
+              password: Yup.string()
+                .min(5, 'Must be 5 characters or more')
+                .max(20, 'Must be 20 characters or less')
+                .required('Required'),
+            })}
+            onSubmit={onSubmit}>
+            {(formik) => (
+              <form className={classes.form} noValidate>
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus
+                  error={!!formik.errors.email}
+                  helperText={formik.errors.email}
+                />
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  error={!!formik.errors.password}
+                  helperText={formik.errors.password}
+                />
+                <FormControlLabel
+                  control={<Checkbox value="remember" color="primary" />}
+                  label="Remember me"
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}>
+                  Sign In
+                </Button>
+                <Grid container>
+                  <Grid item xs>
+                    <Link href="#" variant="body2">
+                      Forgot password?
+                    </Link>
+                  </Grid>
+                  <Grid item>
+                    <Link href="/sign-up" variant="body2">
+                      {"Don't have an account? Sign Up"}
+                    </Link>
+                  </Grid>
+                </Grid>
+                <Box mt={5}></Box>
+              </form>
+            )}
+          </Formik>
         </div>
       </Grid>
     </Grid>

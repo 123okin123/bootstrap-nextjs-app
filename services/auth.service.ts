@@ -1,20 +1,18 @@
 import axios, { AxiosResponse } from 'axios';
 
-export const authService = {
-  ENDPOINT: 'api/' + 'auth/',
-  LOGIN_URL: 'login',
-  SIGN_UP_URL: 'sign-up',
+const ENDPOINT = process.env.NEXT_PUBLIC_API_URL + 'auth/';
 
-  async login(email: string, password: string): Promise<AxiosResponse<void>> {
-    return axios.post(this.ENDPOINT + this.LOGIN_URL, { email, password });
+export const authService = {
+  login: async (email: string, password: string): Promise<AxiosResponse<void>> => {
+    return axios.post(ENDPOINT + 'login', { email, password });
   },
 
-  async signUp(data: {
+  signUp: async (data: {
     email: string;
     password: string;
     firstName: string;
     lastName: string;
-  }): Promise<AxiosResponse<void>> {
-    return axios.post(this.ENDPOINT + this.SIGN_UP_URL, data);
+  }): Promise<AxiosResponse<void>> => {
+    return axios.post(ENDPOINT + 'sign-up', data);
   },
 };
