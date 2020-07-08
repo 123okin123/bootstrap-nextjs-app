@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { getSortedPostsData } from '../lib/posts';
 import { GetStaticProps } from 'next';
 import Layout from '../components/layout';
@@ -20,6 +20,8 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Link from '../components/link';
 import * as Yup from 'yup';
 import { Formik, FormikHelpers } from 'formik';
+import { ApiContainer } from '../hooks/useApi';
+import Alert from '@material-ui/lab/Alert';
 
 interface Props {
   allPostsData: {
@@ -63,19 +65,24 @@ const useStyles = makeStyles((theme) => ({
 interface FormValues {
   email: string;
   password: string;
+  remember: boolean;
 }
 
 export default function Home({ allPostsData }: Props): ReactElement {
   const classes = useStyles();
+  const { authService } = ApiContainer.useContainer();
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const onSubmit = async (
     values: FormValues,
     { setSubmitting }: FormikHelpers<FormValues>,
   ): Promise<void> => {
     try {
-      await authService.signUp(values);
-      setSubmitSuccess(true);
-    } catch {}
+      await authService.login(values.email, values.password);
+      setErrorMessage(null);
+    } catch (err) {
+      setErrorMessage(err.response.data.message);
+    }
     setSubmitting(false);
   };
 
@@ -92,20 +99,16 @@ export default function Home({ allPostsData }: Props): ReactElement {
             Sign in
           </Typography>
           <Formik
-            initialValues={{ firstName: '', lastName: '', email: '', password: '' }}
+            initialValues={{ email: '', password: '', remember: true }}
             validationSchema={Yup.object({
-              firstName: Yup.string().max(15, 'Must be 15 characters or less').required('Required'),
-              lastName: Yup.string().max(20, 'Must be 20 characters or less').required('Required'),
               email: Yup.string().email('Invalid email address').required('Required'),
-              password: Yup.string()
-                .min(5, 'Must be 5 characters or more')
-                .max(20, 'Must be 20 characters or less')
-                .required('Required'),
+              password: Yup.string().required('Required'),
             })}
             onSubmit={onSubmit}>
             {(formik) => (
-              <form className={classes.form} noValidate>
+              <form className={classes.form} noValidate onSubmit={formik.handleSubmit}>
                 <TextField
+                  {...formik.getFieldProps('email')}
                   variant="outlined"
                   margin="normal"
                   required
@@ -119,6 +122,7 @@ export default function Home({ allPostsData }: Props): ReactElement {
                   helperText={formik.errors.email}
                 />
                 <TextField
+                  {...formik.getFieldProps('password')}
                   variant="outlined"
                   margin="normal"
                   required
@@ -132,9 +136,18 @@ export default function Home({ allPostsData }: Props): ReactElement {
                   helperText={formik.errors.password}
                 />
                 <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
+                  control={
+                    <Checkbox
+                      {...formik.getFieldProps('remember')}
+                      name="remember"
+                      value="remember"
+                      color="primary"
+                    />
+                  }
                   label="Remember me"
                 />
+                {!!errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+
                 <Button
                   type="submit"
                   fullWidth
@@ -143,6 +156,7 @@ export default function Home({ allPostsData }: Props): ReactElement {
                   className={classes.submit}>
                   Sign In
                 </Button>
+
                 <Grid container>
                   <Grid item xs>
                     <Link href="#" variant="body2">

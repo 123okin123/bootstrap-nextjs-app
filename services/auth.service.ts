@@ -1,10 +1,11 @@
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
+import httpClient from './httpClient';
 
-const ENDPOINT = process.env.NEXT_PUBLIC_API_URL + 'auth/';
+const ENDPOINT = 'auth/';
 
 export const authService = {
   login: async (email: string, password: string): Promise<AxiosResponse<void>> => {
-    return axios.post(ENDPOINT + 'login', { email, password });
+    return httpClient.post(ENDPOINT + 'login', { email, password });
   },
 
   signUp: async (data: {
@@ -13,6 +14,6 @@ export const authService = {
     firstName: string;
     lastName: string;
   }): Promise<AxiosResponse<void>> => {
-    return axios.post(ENDPOINT + 'sign-up', data);
+    return httpClient.post(ENDPOINT + 'signup', data);
   },
 };
