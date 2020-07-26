@@ -1,19 +1,22 @@
 import { AxiosResponse } from 'axios';
-import httpClient from './httpClient';
+import { httpClient } from './httpClient';
+import { SignUp } from '../entities/sign-up.entity';
 
 const ENDPOINT = 'auth/';
 
 export const authService = {
-  login: async (email: string, password: string): Promise<AxiosResponse<void>> => {
+  login: async (
+    email: string,
+    password: string,
+  ): Promise<AxiosResponse<{ access_token: string; expires_in: string }>> => {
     return httpClient.post(ENDPOINT + 'login', { email, password });
   },
 
-  signUp: async (data: {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-  }): Promise<AxiosResponse<void>> => {
+  logout: async (): Promise<AxiosResponse<void>> => {
+    return httpClient.post(ENDPOINT + 'logout');
+  },
+
+  signUp: async (data: SignUp): Promise<AxiosResponse<void>> => {
     return httpClient.post(ENDPOINT + 'signup', data);
   },
 };

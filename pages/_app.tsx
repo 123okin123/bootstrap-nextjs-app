@@ -4,6 +4,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import theme from '../src/theme';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { ApiContainer } from '../hooks/useApi';
+import { Provider } from 'react-redux';
+import { store } from '../lib/store';
+import { AuthProvider } from '../context/auth';
 
 interface Props {
   Component: any;
@@ -21,10 +24,14 @@ export default function App({ Component, pageProps }: Props): ReactElement {
   return (
     <>
       <ApiContainer.Provider>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Component {...pageProps} />
-        </ThemeProvider>
+        <AuthProvider>
+          <Provider store={store}>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <Component {...pageProps} />
+            </ThemeProvider>
+          </Provider>
+        </AuthProvider>
       </ApiContainer.Provider>
     </>
   );

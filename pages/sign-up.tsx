@@ -14,6 +14,7 @@ import React, { ReactElement, useState } from 'react';
 import * as Yup from 'yup';
 import Copyright from '../components/copyright';
 import { ApiContainer } from '../hooks/useApi';
+import { SignUp } from '../entities/sign-up.entity';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -39,22 +40,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface FormValues {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
-
-export default function SignUp(): ReactElement {
+export default function SignUpPage(): ReactElement {
   const classes = useStyles();
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const { authService } = ApiContainer.useContainer();
 
   const onSubmit = async (
-    values: FormValues,
-    { setSubmitting }: FormikHelpers<FormValues>,
+    values: SignUp,
+    { setSubmitting }: FormikHelpers<SignUp>,
   ): Promise<void> => {
     try {
       await authService.signUp(values);

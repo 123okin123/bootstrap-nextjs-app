@@ -44,5 +44,6 @@ module.exports = {
       },
     ],
     'no-multiple-empty-lines': ['warn', { max: 2, maxEOF: 1 }],
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 };
